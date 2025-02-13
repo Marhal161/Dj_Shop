@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Авторизация</title>
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+</head>
+<body>    
+    <div class="auth-container">
+        <!-- Форма входа -->
+        <form id="loginForm" class="form" action="/shopapp/api/login/" method="POST">
+            {% csrf_token %}
+            <h2>Вход в систему</h2>
+            <div class="form-group">
+                <label for="loginEmail">Email:</label>
+                <input type="email" id="loginEmail" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="loginPassword">Пароль:</label>
+                <input type="password" id="loginPassword" name="password" required>
+                <span class="password-toggle" onclick="togglePassword('loginPassword')">👁️</span>
+            </div>
+
+            <div class="message" id="loginMessage"></div>
+            
+            <button type="submit">Войти</button>
+            
+            <p class="form-footer">
+                Нет аккаунта? <a href="#" class="toggle-form" data-show="register">Зарегистрироваться</a>
+            </p>
+        </form>
+
+        <!-- Форма регистрации -->
+        <form id="registerForm" class="form hidden" action="/shopapp/api/register/" method="POST">
+            {% csrf_token %}
+            <h2>Регистрация</h2>
+            <div class="form-group">
+                <label for="firstName">Имя:</label>
+                <input type="text" id="firstName" name="first_name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="lastName">Фамилия:</label>
+                <input type="text" id="lastName" name="last_name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="registerEmail">Email:</label>
+                <input type="email" id="registerEmail" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="registerPassword">Пароль:</label>
+                <input type="password" id="registerPassword" name="password" required>
+                <span class="password-toggle" onclick="togglePassword('registerPassword')">👁️</span>
+            </div>
+
+            <div class="message" id="registerMessage"></div>
+            
+            <button type="submit">Зарегистрироваться</button>
+            
+            <p class="form-footer">
+                Уже есть аккаунт? <a href="#" class="toggle-form" data-show="login">Войти</a>
+            </p>
+        </form>
+    </div>
+
+    <script src="{% static 'js/auth.js' %}"></script>
+</body>
+</html>
