@@ -1,0 +1,117 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Главная{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Хедер -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="/">
+                    <img src="{% static 'images/logo.svg' %}" alt="Логотип">
+                </a>
+            </div>
+            
+            <nav class="main-nav">
+                <ul class="nav-list">
+                    <li><a href="/" class="nav-link">Главная</a></li>
+                    <li><a href="/catalog/" class="nav-link">Каталог</a></li>
+                    <li><a href="/about/" class="nav-link">О нас</a></li>
+                    <li><a href="/contacts/" class="nav-link">Контакты</a></li>
+                </ul>
+            </nav>
+
+            <div class="user-actions">
+                {% if user.is_authenticated %}
+                    <div class="user-menu">
+                        <a href="/profile/" class="user-link">
+                            <span class="user-name">{{ user.first_name }}</span>
+                        </a>
+                        <div class="cart">
+                            <a href="/cart/" class="cart-link">
+                                <span class="cart-icon">🛒</span>
+                                <span class="cart-count">0</span>
+                            </a>
+                        </div>
+                        <a href="/logout/" class="logout-btn">Выйти</a>
+                    </div>
+                {% else %}
+                    <a href="/auth/" class="auth-btn">Войти</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- ... существующий код ... -->
+
+    <!-- Основной контент -->
+    <main class="main-content">
+        {% block content %}
+        <div class="game-cards-container">
+            {% if games %}
+                {% for game in games %}
+                <div class="game-card">
+                    <h3 class="game-title">{{ game.name }}</h3>
+                    <p class="game-price">{{ game.price }} ₽</p>
+                    <p class="game-quantity">Количество: {{ game.available_quantity }}</p>
+                    <div class="game-screenshots">
+                        {% for screenshot in game.screenshots.all %}
+                        <img src="{{ screenshot.image.url }}" alt="Скриншот {{ game.name }} - {{ screenshot.get_order_display }}" class="game-image" />
+                        {% endfor %}
+                    </div>
+                    <button class="buy-button">Купить</button>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>Игры не найдены.</p>
+            {% endif %}
+        </div>
+        {% endblock %}
+    </main>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>О компании</h3>
+                <ul>
+                    <li><a href="/about/">О нас</a></li>
+                    <li><a href="/contacts/">Контакты</a></li>
+                    <li><a href="/delivery/">Доставка</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Покупателям</h3>
+                <ul>
+                    <li><a href="/how-to-buy/">Как купить</a></li>
+                    <li><a href="/payment/">Оплата</a></li>
+                    <li><a href="/returns/">Возврат</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Контакты</h3>
+                <p>Телефон: +7 (999) 123-45-67</p>
+                <p>Email: info@example.com</p>
+                <div class="social-links">
+                    <a href="#" class="social-link">VK</a>
+                    <a href="#" class="social-link">Telegram</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Название компании. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/base.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html> 

@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 showMessage('loginMessage', data.message || 'Вход выполнен успешно!', false);
                 // Редирект после успешного входа
                 setTimeout(() => {
-                    window.location.href = '/dashboard/';
+                    window.location.href = '/shopapp/';
                 }, 1500);
             } else {
                 // Обработка различных типов ошибок
