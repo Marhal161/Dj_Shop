@@ -137,3 +137,68 @@ function togglePassword(inputId) {
         input.type = input.type === 'password' ? 'text' : 'password';
     }
 }
+
+function handleLogout(event) {
+    event.preventDefault();
+    console.log('Logout function called');
+    
+    // Показываем подтверждение
+    if (!confirm('Вы уверены, что хотите выйти?')) {
+        return;
+    }
+    
+    console.log('Sending logout request');
+    
+    fetch('/shopapp/api/logout/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        credentials: 'include'
+    })
+    .then(response => {
+        console.log('Response received:', response.status);
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error('Logout failed');
+    })
+    .then(data => {
+        console.log('Response data:', data);
+        if (data.success) {
+            // Очищаем локальное состояние
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            // Перенаправляем на страницу авторизации
+            window.location.href = '/shopapp/auth/';
+        } else {
+            console.error('Logout failed:', data.message);
+            window.location.href = '/shopapp/auth/';
+        }
+    })
+    .catch(error => {
+        console.error('Error during logout:', error);
+        window.location.href = '/shopapp/auth/';
+    });
+}
+
+// Функция для получения значения cookie
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Убедимся, что скрипт загружен
+console.log('Auth.js loaded');

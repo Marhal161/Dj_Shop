@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль</title>
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+    <link rel="icon" type="image/png" href="/static/images/favicon.png">
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/profile.css">
+</head>
+<body>
+    <!-- Хедер -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="/shopapp/">
+                    <img src="/static/images/logo.png" alt="Логотип" style="width: 100px; height: auto;">
+                </a>
+            </div>
+            
+            <nav class="main-nav">
+                <ul class="nav-list">
+                    <li><a href="#" class="nav-link">Каталог</a></li>
+                    <li><a href="#" class="nav-link">О нас</a></li>
+                    <li><a href="#" class="nav-link">Контакты</a></li>
+                </ul>
+            </nav>
+
+            <div class="user-actions">
+                <div class="user-menu">
+                    <div class="cart">
+                        <a href="/cart/" class="cart-link">
+                            <img src="/static/images/cart.png" alt="Корзина" style="width: 40px; height: auto;">
+                        </a>
+                    </div>
+                    <div class="user-menu">
+                        <button type="button" class="logout-button" onclick="handleLogout(event)">Выйти</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="main-content">
+        <div class="profile-container">
+            <div class="profile-header">
+                <h1>Личный кабинет</h1>
+            </div>
+
+            <div class="profile-content">
+                <!-- Информация профиля -->
+                <div class="profile-section">
+                    <h2>Личные данные</h2>
+                    <form id="profileForm" class="profile-form">
+                        <div class="form-group">
+                            <label for="firstName">Имя</label>
+                            <input type="text" id="firstName" name="first_name">
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Фамилия</label>
+                            <input type="text" id="lastName" name="last_name">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email">
+                        </div>
+                        <button type="submit" class="btn-save">Сохранить изменения</button>
+                    </form>
+                </div>
+
+                <!-- Баланс и пополнение -->
+                <div class="balance-section">
+                    <h2>Баланс</h2>
+                    <div class="balance-info">
+                        <p>Текущий баланс: <span id="currentBalance">0</span> ₽</p>
+                    </div>
+                    <form id="balanceForm" class="balance-form">
+                        <div class="form-group">
+                            <label for="amount">Сумма пополнения</label>
+                            <input type="number" id="amount" name="amount" min="1" step="1">
+                        </div>
+                        <button type="submit" class="btn-deposit">Пополнить</button>
+                    </form>
+                </div>
+
+                <!-- История транзакций -->
+                <div class="transactions-section">
+                    <h2>История операций</h2>
+                    <div id="transactionsList" class="transactions-list">
+                        <!-- Транзакции будут добавляться динамически -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>О компании</h3>
+                <ul>
+                    <li><a href="/about/">О нас</a></li>
+                    <li><a href="/contacts/">Контакты</a></li>
+                    <li><a href="/delivery/">Доставка</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Покупателям</h3>
+                <ul>
+                    <li><a href="/how-to-buy/">Как купить</a></li>
+                    <li><a href="/payment/">Оплата</a></li>
+                    <li><a href="/returns/">Возврат</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Контакты</h3>
+                <p>Телефон: +7 (999) 123-45-67</p>
+                <p>Email: info@example.com</p>
+                <div class="social-links">
+                    <a href="#" class="social-link">VK</a>
+                    <a href="#" class="social-link">Telegram</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Название компании. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script src="/static/js/base.js"></script>
+    <script src="/static/js/profile.js"></script>
+</body>
+</html> 

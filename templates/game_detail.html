@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/game_detail.css">
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+</head>
+<body>
+        <!-- Хедер -->
+        <header class="header">
+            <div class="header-container">
+                <div class="logo">
+                    <a href="/shopapp/">
+                        <img src="{% static 'images/logo.png' %}" alt="Логотип" style="width: 100px; height: auto;">
+                    </a>
+                </div>
+                
+                <nav class="main-nav">
+                    <ul class="nav-list">
+                        <li><a href="#" class="nav-link">Каталог</a></li>
+                        <li><a href="#" class="nav-link">О нас</a></li>
+                        <li><a href="#" class="nav-link">Контакты</a></li>
+                    </ul>
+                </nav>
+    
+                <div class="user-controls">
+                    <a href="/profile/" class="profile-btn">
+                        <img src="{% static 'images/profile.png' %}" alt="Профиль">
+                    </a>
+                    <a href="/cart/" class="cart-btn">
+                        <img src="{% static 'images/cart.png' %}" alt="Корзина">
+                    </a>
+                    {% if is_authenticated %}
+                        <div class="user-menu">
+                            <button type="button" class="logout-button" onclick="handleLogout(event)">Выйти</button>
+                        </div>
+                    {% else %}
+                        <a href="/shopapp/auth/" class="login-btn">Войти</a>
+                    {% endif %}
+                </div>
+            </div>
+        </header>
+
+    <main class="main-content">
+        <div class="game-detail-container">
+            <div class="game-detail-content">
+                <div class="game-detail-header">
+                    <h1 class="game-title">{{ title }}</h1>
+                    <div class="game-price">{{ price }} ₽</div>
+                </div>
+                
+                <div class="game-categories">
+                    {% for category in categories %}
+                        <span class="category-tag">{{ category.name }}</span>
+                    {% endfor %}
+                </div>
+                
+                <div class="game-images">
+                    <button class="slider-button prev">❮</button>
+                    <button class="slider-button next">❯</button>
+                    
+                    <div class="screenshots-container">
+                        {% if screenshots %}
+                            {% for screenshot in screenshots %}
+                                <div class="game-screenshot">
+                                    <img src="{{ screenshot.image.url }}" alt="Скриншот {{ screenshot.get_order_display }}">
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="game-screenshot">
+                                <img src="/static/images/default-game.jpg" alt="Изображение отсутствует">
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="slider-indicators">
+                        {% if screenshots %}
+                            {% for screenshot in screenshots %}
+                                <div class="indicator {% if forloop.first %}active{% endif %}" data-index="{{ forloop.counter0 }}"></div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="indicator active" data-index="0"></div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="game-info">
+                    <div class="game-description">
+                        <h2>Описание</h2>
+                        <p>{{ description }}</p>
+                    </div>
+                    
+                    <div class="game-details">
+                        <h2>Характеристики</h2>
+                        <ul>
+                            <li><strong>В наличии:</strong> {{ quantity }} шт.</li>
+                            <li><strong>Категории:</strong> 
+                                {% for category in categories %}
+                                    {{ category.name }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="game-actions">
+                    {% if request.user.is_authenticated %}
+                        <button class="buy-button">Купить</button>
+                    {% else %}
+                        <a href="/auth/" class="buy-button">Войдите, чтобы купить</a>
+                    {% endif %}
+                </div>
+
+                <div class="game-reviews">
+                    <h2>Отзывы</h2>
+                    <div id="reviews-container">
+                        <!-- Отзывы будут загружаться сюда через JavaScript -->
+                    </div>
+                    
+                    {% if request.user.is_authenticated %}
+                        <div class="review-form">
+                            <h3>Оставить отзыв</h3>
+                            <form id="review-form">
+                                <div class="rating-input">
+                                    <label>Оценка:</label>
+                                    <div class="star-rating">
+                                        <span class="star" data-rating="1">★</span>
+                                        <span class="star" data-rating="2">★</span>
+                                        <span class="star" data-rating="3">★</span>
+                                        <span class="star" data-rating="4">★</span>
+                                        <span class="star" data-rating="5">★</span>
+                                    </div>
+                                    <input type="hidden" name="rating" id="rating-value" value="0">
+                                </div>
+                                <div class="comment-input">
+                                    <label>Комментарий:</label>
+                                    <textarea name="comment" required></textarea>
+                                </div>
+                                <button type="submit">Отправить отзыв</button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/static/js/base.js"></script>
+    <script src="{% static 'js/reviews.js' %}"></script>
+    <script src="{% static 'js/auth.js' %}"></script>
+</body>
+</html>

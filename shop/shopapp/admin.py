@@ -9,10 +9,15 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'price', 'available_quantity', 'category']
-    list_filter = ['category']
+    list_display = ['name', 'price', 'available_quantity', 'get_categories']
+    list_filter = ['categories']
     search_fields = ['name', 'description']
     list_editable = ['price', 'available_quantity']
+    filter_horizontal = ['categories']
+
+    def get_categories(self, obj):
+        return ", ".join([category.name for category in obj.categories.all()])
+    get_categories.short_description = 'Категории'
 
 @admin.register(ProductScreenshot)
 class ProductScreenshotAdmin(admin.ModelAdmin):
@@ -22,7 +27,7 @@ class ProductScreenshotAdmin(admin.ModelAdmin):
 
     def image_preview(self, obj):
         if obj.image:
-            return mark_safe(f'<img src="{{{{ obj.image.url }}}}" width="200" height="200" />')
+            return mark_safe(f'<img src="{obj.image.url}" width="200" height="200" />')
         return "Нет изображения"
     
     image_preview.short_description = 'Предпросмотр изображения'

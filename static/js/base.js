@@ -38,4 +38,32 @@ document.addEventListener('DOMContentLoaded', function() {
             link.classList.add('active');
         }
     });
+
+    // Управление анимацией карточек
+    const wrapper = document.querySelector('.game-cards-wrapper');
+    if (wrapper) {
+        const cards = wrapper.querySelectorAll('.game-card');
+        
+        // Дублируем карточки для бесконечной анимации
+        cards.forEach(card => {
+            const clone = card.cloneNode(true);
+            wrapper.appendChild(clone);
+        });
+
+        // Устанавливаем стиль анимации
+        wrapper.style.cssText = `
+            animation: scroll-left 120s linear infinite;
+            animation-play-state: running;
+        `;
+
+        // Добавляем обработчики для остановки анимации при наведении
+        wrapper.addEventListener('mouseenter', () => {
+            wrapper.style.animationPlayState = 'paused';
+        });
+
+        wrapper.addEventListener('mouseleave', () => {
+            wrapper.style.animationPlayState = 'running';
+        });
+    }
+
 }); 

@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Главная{% endblock %}</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
@@ -13,64 +15,95 @@
     <header class="header">
         <div class="header-container">
             <div class="logo">
-                <a href="/">
-                    <img src="{% static 'images/logo.svg' %}" alt="Логотип">
+                <a href="/shopapp/">
+                    <img src="{% static 'images/logo.png' %}" alt="Логотип" style="width: 100px; height: auto;">
                 </a>
             </div>
             
             <nav class="main-nav">
                 <ul class="nav-list">
-                    <li><a href="/" class="nav-link">Главная</a></li>
-                    <li><a href="/catalog/" class="nav-link">Каталог</a></li>
-                    <li><a href="/about/" class="nav-link">О нас</a></li>
-                    <li><a href="/contacts/" class="nav-link">Контакты</a></li>
+                    <li><a href="#" class="nav-link">Каталог</a></li>
+                    <li><a href="#" class="nav-link">О нас</a></li>
+                    <li><a href="#" class="nav-link">Контакты</a></li>
                 </ul>
             </nav>
 
-            <div class="user-actions">
-                {% if user.is_authenticated %}
+            <div class="user-controls">
+                <a href="/shopapp/profile/" class="profile-btn">
+                    <img src="{% static 'images/profile.png' %}" alt="Профиль">
+                </a>
+                <a href="/shopapp/cart/" class="cart-btn">
+                    <img src="{% static 'images/cart.png' %}" alt="Корзина">
+                </a>
+                {% if is_authenticated %}
                     <div class="user-menu">
-                        <a href="/profile/" class="user-link">
-                            <span class="user-name">{{ user.first_name }}</span>
-                        </a>
-                        <div class="cart">
-                            <a href="/cart/" class="cart-link">
-                                <span class="cart-icon">🛒</span>
-                                <span class="cart-count">0</span>
-                            </a>
-                        </div>
-                        <a href="/logout/" class="logout-btn">Выйти</a>
+                        <button type="button" class="logout-button" onclick="handleLogout(event)">Выйти</button>
                     </div>
                 {% else %}
-                    <a href="/auth/" class="auth-btn">Войти</a>
+                    <a href="/shopapp/auth/" class="login-btn">Войти</a>
                 {% endif %}
             </div>
         </div>
     </header>
 
-    <!-- ... существующий код ... -->
-
     <!-- Основной контент -->
     <main class="main-content">
         {% block content %}
         <div class="game-cards-container">
-            {% if games %}
-                {% for game in games %}
-                <div class="game-card">
-                    <h3 class="game-title">{{ game.name }}</h3>
-                    <p class="game-price">{{ game.price }} ₽</p>
-                    <p class="game-quantity">Количество: {{ game.available_quantity }}</p>
-                    <div class="game-screenshots">
-                        {% for screenshot in game.screenshots.all %}
-                        <img src="{{ screenshot.image.url }}" alt="Скриншот {{ game.name }} - {{ screenshot.get_order_display }}" class="game-image" />
-                        {% endfor %}
+            <h2 class="section-title">Топовые игры</h2>
+            <div class="game-cards-wrapper">
+                {% if games %}
+                    {% for game in games %}
+                    <div class="game-card">
+                        <a href="{% url 'game_detail' game.id %}" class="game-link">
+                            <h3 class="game-title">{{ game.name }}</h3>
+                            <div class="game-image-container">
+                                {% if game.screenshots.all %}
+                                    {% with first_screenshot=game.screenshots.first %}
+                                        <img 
+                                            src="{{ first_screenshot.image.url }}" 
+                                            alt="Скриншот {{ game.name }}" 
+                                            class="game-image"
+                                        />
+                                    {% endwith %}
+                                {% endif %}
+                            </div>
+                            <div class="game-info">
+                                <p class="game-price">{{ game.price }} ₽</p>
+                                <p class="game-quantity">Количество: {{ game.available_quantity }}</p>
+                                <button class="buy-button">Купить</button>
+                            </div>
+                        </a>
                     </div>
-                    <button class="buy-button">Купить</button>
-                </div>
-                {% endfor %}
-            {% else %}
-                <p>Игры не найдены.</p>
-            {% endif %}
+                    {% endfor %}
+                    <!-- Дублируем карточки для бесконечной прокрутки -->
+                    {% for game in games %}
+                    <div class="game-card">
+                        <a href="{% url 'game_detail' game.id %}" class="game-link">
+                            <h3 class="game-title">{{ game.name }}</h3>
+                            <div class="game-image-container">
+                                {% if game.screenshots.all %}
+                                    {% with first_screenshot=game.screenshots.first %}
+                                        <img 
+                                            src="{{ first_screenshot.image.url }}" 
+                                            alt="Скриншот {{ game.name }}" 
+                                            class="game-image"
+                                        />
+                                    {% endwith %}
+                                {% endif %}
+                            </div>
+                            <div class="game-info">
+                                <p class="game-price">{{ game.price }} ₽</p>
+                                <p class="game-quantity">Количество: {{ game.available_quantity }}</p>
+                                <button class="buy-button">Купить</button>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p>Игры не найдены.</p>
+                {% endif %}
+            </div>
         </div>
         {% endblock %}
     </main>
@@ -112,6 +145,7 @@
     </footer>
 
     <script src="{% static 'js/base.js' %}"></script>
+    <script src="{% static 'js/logout.js' %}"></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html> 
