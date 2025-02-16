@@ -153,11 +153,17 @@ class ProfileBalanceTransactionsView(APIView):
         try:
             transactions = BalanceTransaction.objects.filter(
                 user=request.user
-            ).order_by('-created_at')[:10]  # Получаем последние 10 транзакций
+            ).order_by('-created_at')[:10]
             
-            serializer = BalanceTransactionSerializer(transactions, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            data = [{
+                'amount': str(transaction.amount),
+                'transaction_type': transaction.transaction_type,
+                'description': transaction.description,
+                'game_key': transaction.game_key,
+                'created_at': transaction.created_at.strftime('%Y-%m-%dT%H:%M:%S')
+            } for transaction in transactions]
             
+            return Response(data, status=status.HTTP_200_OK)
         except Exception as e:
             logger.error(f"Ошибка при получении истории транзакций: {str(e)}")
             return Response(

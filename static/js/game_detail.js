@@ -1,80 +1,281 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const container = document.querySelector('.screenshots-container');
-    const screenshots = document.querySelectorAll('.game-screenshot');
-    const prevButton = document.querySelector('.slider-button.prev');
-    const nextButton = document.querySelector('.slider-button.next');
-    const indicators = document.querySelectorAll('.indicator');
+    const mainImage = document.querySelector('.main-screenshot img');
+    const thumbnails = document.querySelectorAll('.thumbnail');
     
-    let currentIndex = 0;
-    const totalSlides = screenshots.length;
-
-    // Функция обновления слайдера
-    function updateSlider() {
-        container.style.transform = `translateX(-${currentIndex * 100}%)`;
-        
-        // Обновляем индикаторы
-        indicators.forEach((indicator, index) => {
-            indicator.classList.toggle('active', index === currentIndex);
+    // Устанавливаем первую миниатюру как активную
+    if (thumbnails.length > 0) {
+        thumbnails[0].classList.add('active');
+    }
+    
+    thumbnails.forEach(thumbnail => {
+        thumbnail.addEventListener('click', function() {
+            const newSrc = this.getAttribute('data-src');
+            
+            if (newSrc) {
+                // Плавное затухание
+                mainImage.style.opacity = '0';
+                
+                // Меняем изображение после начала анимации
+                setTimeout(() => {
+                    mainImage.src = newSrc;
+                    // Плавное появление нового изображения
+                    mainImage.style.opacity = '1';
+                }, 300);
+                
+                // Обновляем активный класс
+                thumbnails.forEach(thumb => thumb.classList.remove('active'));
+                this.classList.add('active');
+            }
         });
-        
-        // Обновляем состояние кнопок
-        prevButton.style.display = currentIndex === 0 ? 'none' : 'flex';
-        nextButton.style.display = currentIndex === totalSlides - 1 ? 'none' : 'flex';
+    });
+    
+    // Обработка загрузки основного изображения
+    mainImage.addEventListener('load', function() {
+        this.style.opacity = '1';
+    });
+    
+    // Добавляем отладочную информацию
+    console.log('Game detail script loaded');
+    console.log('Found thumbnails:', thumbnails.length);
+    console.log('Main image:', mainImage);
+
+    const addToCartButton = document.querySelector('.add-to-cart-button');
+    if (addToCartButton) {
+        addToCartButton.addEventListener('click', handleAddToCart);
     }
 
-    // Обработчики для кнопок
-    prevButton.addEventListener('click', () => {
-        if (currentIndex > 0) {
-            currentIndex--;
-            updateSlider();
-        }
-    });
+    const reviewForm = document.getElementById('review-form');
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', handleReviewSubmit);
+    }
 
-    nextButton.addEventListener('click', () => {
-        if (currentIndex < totalSlides - 1) {
-            currentIndex++;
-            updateSlider();
-        }
-    });
-
-    // Обработчики для индикаторов
-    indicators.forEach((indicator, index) => {
-        indicator.addEventListener('click', () => {
-            currentIndex = index;
-            updateSlider();
+    // Инициализация звездного рейтинга
+    const ratingStars = document.querySelectorAll('.star-rating .star');
+    const ratingInput = document.getElementById('rating-value');
+    
+    ratingStars.forEach(star => {
+        star.addEventListener('mouseover', function() {
+            const rating = this.dataset.rating;
+            highlightStars(rating);
+        });
+        
+        star.addEventListener('mouseout', function() {
+            highlightStars(ratingInput.value);
+        });
+        
+        star.addEventListener('click', function() {
+            const rating = this.dataset.rating;
+            ratingInput.value = rating;
+            highlightStars(rating);
         });
     });
 
-    // Поддержка свайпов для мобильных устройств
-    let touchStartX = 0;
-    let touchEndX = 0;
+    // Загружаем отзывы при загрузке страницы
+    const productId = document.getElementById('review-form')?.dataset.productId;
+    if (productId) {
+        loadReviews(productId);
+    }
+});
 
-    container.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-    });
+async function handleAddToCart(event) {
+    event.preventDefault();
+    
+    const button = event.currentTarget;
+    const gameId = button.dataset.gameId;
+    
+    if (!gameId) {
+        showNotification('Ошибка: ID игры не найден', 'error');
+        return;
+    }
 
-    container.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipe();
-    });
+    try {
+        // Получаем CSRF токен из cookie
+        const csrftoken = getCookie('csrftoken');
+        
+        const response = await fetch('/shopapp/api/cart/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,  // Добавляем CSRF токен
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                product_id: gameId,
+                quantity: 1
+            })
+        });
 
-    function handleSwipe() {
-        const swipeThreshold = 50;
-        const diff = touchStartX - touchEndX;
+        const data = await response.json();
 
-        if (Math.abs(diff) > swipeThreshold) {
-            if (diff > 0 && currentIndex < totalSlides - 1) {
-                // Свайп влево
-                currentIndex++;
-                updateSlider();
-            } else if (diff < 0 && currentIndex > 0) {
-                // Свайп вправо
-                currentIndex--;
-                updateSlider();
+        if (response.ok) {
+            showNotification('Игра добавлена в корзину', 'success');
+            updateCartCounter();
+            
+            const viewCartButton = document.querySelector('.view-cart-button');
+            if (viewCartButton) {
+                viewCartButton.style.display = 'block';
+            }
+        } else {
+            showNotification(data.error || 'Ошибка при добавлении в корзину', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('Ошибка при добавлении в корзину', 'error');
+    }
+}
+
+// Функция для получения значения cookie
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
             }
         }
     }
+    return cookieValue;
+}
 
-    // Инициализация слайдера
-    updateSlider();
-}); 
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+// Функция для отображения отзывов
+function displayReviews(reviews) {
+    const reviewsContainer = document.getElementById('reviews-container');
+    reviewsContainer.innerHTML = reviews.map(review => `
+        <div class="review-card" data-review-id="${review.id}">
+            <div class="review-header">
+                <span class="review-author">${review.user}</span>
+                <span class="review-rating">★ ${review.rating}</span>
+                ${review.is_owner ? `
+                    <button class="delete-review-btn" onclick="deleteReview(${review.id})">
+                        Удалить
+                    </button>
+                ` : ''}
+            </div>
+            <p class="review-comment">${review.comment}</p>
+            <span class="review-date">${new Date(review.created_at).toLocaleDateString()}</span>
+        </div>
+    `).join('');
+}
+
+// Функция для удаления отзыва
+async function deleteReview(reviewId) {
+    if (!confirm('Вы уверены, что хотите удалить этот отзыв?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/shopapp/api/review/${reviewId}/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        });
+
+        if (!response.ok) {
+            const data = await response.json();
+            throw new Error(data.error || 'Ошибка при удалении отзыва');
+        }
+
+        // Удаляем карточку отзыва из DOM
+        const reviewCard = document.querySelector(`.review-card[data-review-id="${reviewId}"]`);
+        if (reviewCard) {
+            reviewCard.remove();
+        }
+
+        showNotification('Отзыв успешно удален', 'success');
+
+    } catch (error) {
+        console.error('Ошибка при удалении отзыва:', error);
+        showNotification(error.message, 'error');
+    }
+}
+
+// Функция для отправки отзыва
+async function handleReviewSubmit(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const rating = form.querySelector('#rating-value').value;
+    const comment = form.querySelector('#comment').value;
+    const productId = form.dataset.productId;
+
+    if (!rating || rating === '0' || !comment) {
+        showNotification('Пожалуйста, поставьте оценку и напишите комментарий', 'error');
+        return;
+    }
+
+    try {
+        const response = await fetch('/shopapp/api/review/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                product_id: productId,
+                rating: parseInt(rating),
+                comment: comment
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Ошибка при отправке отзыва');
+        }
+
+        // Очищаем форму
+        form.reset();
+        highlightStars(0);  // Сбрасываем звезды
+
+        // Обновляем список отзывов
+        await loadReviews(productId);
+        
+        showNotification('Отзыв успешно добавлен', 'success');
+
+    } catch (error) {
+        console.error('Ошибка при отправке отзыва:', error);
+        showNotification(error.message, 'error');
+    }
+}
+
+// Функция для загрузки отзывов
+async function loadReviews(productId) {
+    try {
+        const response = await fetch(`/shopapp/api/review/?product_id=${productId}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Ошибка при загрузке отзывов');
+        }
+
+        displayReviews(data.reviews);
+
+    } catch (error) {
+        console.error('Ошибка при загрузке отзывов:', error);
+        showNotification(error.message, 'error');
+    }
+}
+
+function highlightStars(rating) {
+    document.querySelectorAll('.star-rating .star').forEach(star => {
+        const starRating = parseInt(star.dataset.rating);
+        star.classList.toggle('active', starRating <= rating);
+        star.classList.toggle('hover', starRating <= rating);
+    });
+} 

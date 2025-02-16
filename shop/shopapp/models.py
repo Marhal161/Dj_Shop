@@ -2,6 +2,9 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.core.validators import MaxValueValidator
 import os
+from django.utils import timezone
+import random
+import string
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
@@ -19,6 +22,14 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     available_quantity = models.IntegerField()
     categories = models.ManyToManyField(Category, related_name='products')
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def get_rating(self):
+        """Вычисляет средний рейтинг на основе отзывов"""
+        reviews = self.reviews.all()
+        if not reviews:
+            return None
+        return round(sum(review.rating for review in reviews) / reviews.count(), 1)
 
     def __str__(self):
         return self.name
@@ -79,6 +90,7 @@ class ProductScreenshot(models.Model):
     def get_order_display(self):
         return self.order + 1
 
+
 class Review(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -86,12 +98,18 @@ class Review(models.Model):
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def is_owner(self, user):
+        return self.user == user
+
     def __str__(self):
         return f'Review by {self.user.username} for {self.product.name}'
 
 class Cart(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     products = models.ManyToManyField(Product, through='CartItem')
+    
+    def get_total_price(self):
+        return sum(item.get_total_price() for item in self.cartitem_set.all())
 
     def __str__(self):
         return f'Cart of {self.user.username}'
@@ -100,6 +118,9 @@ class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
+
+    def get_total_price(self):
+        return self.product.price * self.quantity
 
     def __str__(self):
         return f'{self.quantity} x {self.product.name} in {self.cart}'
@@ -123,10 +144,39 @@ class OrderItem(models.Model):
         return f'{self.quantity} x {self.product.name} in Order {self.order.id}'
 
 class BalanceTransaction(models.Model):
+    TRANSACTION_TYPES = [
+        ('DEPOSIT', 'Пополнение'),
+        ('WITHDRAW', 'Списание'),
+        ('PURCHASE_FAILED', 'Отказ в покупке'),
+        ('PURCHASE_SUCCESS', 'Успешная покупка')
+    ]
+    
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    transaction_type = models.CharField(max_length=10, choices=[('DEPOSIT', 'Deposit'), ('WITHDRAW', 'Withdraw')])
+    transaction_type = models.CharField(max_length=20, choices=TRANSACTION_TYPES)
+    description = models.CharField(max_length=255, blank=True, null=True)
+    game_key = models.CharField(max_length=50, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f'{self.transaction_type} of {self.amount} by {self.user.username}'
+
+class Purchase(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='purchases')
+    game = models.ForeignKey(Product, on_delete=models.CASCADE)
+    game_key = models.CharField(max_length=50)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def generate_game_key(self):
+        """Генерация случайного ключа игры"""
+        chars = string.ascii_uppercase + string.digits
+        return ''.join(random.choice(chars) for _ in range(16))
+
+    def save(self, *args, **kwargs):
+        if not self.game_key:
+            self.game_key = self.generate_game_key()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        ordering = ['-created_at']

@@ -48,6 +48,9 @@ function updateProfileData(data) {
     document.getElementById('lastName').value = data.last_name || '';
     document.getElementById('email').value = data.email || '';
     
+    // Обновляем инициалы в аватаре
+    updateAvatar(data.first_name, data.last_name);
+    
     const userFullName = document.getElementById('userFullName');
     if (userFullName) {
         userFullName.textContent = `${data.first_name} ${data.last_name}`.trim() || data.username;
@@ -60,12 +63,38 @@ function updateProfileData(data) {
     }
 }
 
+// Функция обновления аватара
+function updateAvatar(firstName, lastName) {
+    const initialsElement = document.querySelector('.initials');
+    if (initialsElement) {
+        let initials = '';
+        if (firstName) initials += firstName.charAt(0);
+        if (lastName) initials += lastName.charAt(0);
+        initialsElement.textContent = initials.toUpperCase() || '?';
+        
+        // Генерируем цвет на основе имени
+        const avatarCircle = document.querySelector('.avatar-circle');
+        if (avatarCircle) {
+            const colors = [
+                '#2ecc71', '#3498db', '#9b59b6', '#f1c40f', 
+                '#e74c3c', '#1abc9c', '#34495e', '#e67e22'
+            ];
+            const colorIndex = Math.abs(
+                (firstName + lastName).split('').reduce(
+                    (acc, char) => acc + char.charCodeAt(0), 0
+                )
+            ) % colors.length;
+            avatarCircle.style.backgroundColor = colors[colorIndex];
+        }
+    }
+}
+
 // Функция обновления списка транзакций
 function updateTransactionsList(transactions) {
     const transactionsList = document.getElementById('transactionsList');
     if (!transactionsList) return;
 
-    transactionsList.innerHTML = ''; // Очищаем список
+    transactionsList.innerHTML = '';
 
     if (transactions.length === 0) {
         transactionsList.innerHTML = '<div class="transaction-item">История операций пуста</div>';
@@ -79,12 +108,46 @@ function updateTransactionsList(transactions) {
         const date = new Date(transaction.created_at).toLocaleString('ru-RU');
         const amount = parseFloat(transaction.amount).toFixed(2);
         
+        let transactionClass = '';
+        let sign = '';
+        let description = transaction.description || '';
+        let gameKeyHtml = '';
+
+        switch(transaction.transaction_type) {
+            case 'DEPOSIT':
+                transactionClass = 'deposit';
+                sign = '+';
+                if (!description) description = 'Пополнение баланса';
+                break;
+            case 'WITHDRAW':
+                transactionClass = 'withdraw';
+                sign = '-';
+                if (!description) description = 'Списание средств';
+                break;
+            case 'PURCHASE_FAILED':
+                transactionClass = 'failed';
+                sign = '';
+                if (!description) description = 'Неудачная попытка покупки';
+                break;
+            case 'PURCHASE_SUCCESS':
+                transactionClass = 'success';
+                sign = '-';
+                if (!description) description = 'Успешная покупка игры';
+                if (transaction.game_key) {
+                    gameKeyHtml = `<div class="game-key">Ключ: <span>${transaction.game_key}</span></div>`;
+                }
+                break;
+        }
+        
         transactionElement.innerHTML = `
             <div class="transaction-info">
-                <span class="transaction-type">Пополнение</span>
-                <span class="transaction-date">${date}</span>
+                <div class="transaction-details">
+                    <span class="transaction-type">${description}</span>
+                    ${gameKeyHtml}
+                    <span class="transaction-date">${date}</span>
+                </div>
+                <span class="transaction-amount ${transactionClass}">${sign}${amount} ₽</span>
             </div>
-            <span class="transaction-amount deposit">+${amount} ₽</span>
         `;
         
         transactionsList.appendChild(transactionElement);
@@ -204,23 +267,22 @@ function showNotification(message, type) {
 }
 
 // Обработчик выхода
-function handleLogout(event) {
+async function handleLogout(event) {
     event.preventDefault();
     
-    fetch('/shopapp/api/logout/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        }
-    })
-    .then(response => {
+    try {
+        const response = await fetch('/shopapp/api/logout/', {
+            method: 'POST',
+            credentials: 'include'
+        });
+
         if (response.ok) {
-            window.location.href = '/auth/';
+            window.location.href = '/shopapp/auth/';
         } else {
-            throw new Error('Ошибка при выходе');
+            showNotification('Ошибка при выходе из системы', 'error');
         }
-    })
-    .catch(error => {
+    } catch (error) {
+        console.error('Error:', error);
         showNotification('Ошибка при выходе из системы', 'error');
-    });
-} 
+    }
+}

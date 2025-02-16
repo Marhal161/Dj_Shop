@@ -66,4 +66,56 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-}); 
+    // Обновляем счетчик корзины при загрузке любой страницы
+    console.log('DOM loaded, calling updateCartCounter');
+    updateCartCounter();
+});
+
+// Функция обновления счетчика корзины
+async function updateCartCounter() {
+    try {
+        console.log('Updating cart counter...'); // Добавим отладочный вывод
+        const response = await fetch('/shopapp/api/cart/', {
+            credentials: 'include'
+        });
+        
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        console.log('Cart data:', data);
+
+        const cartBtn = document.querySelector('.cart-btn');
+        console.log('Cart button found:', cartBtn); // Проверим наличие кнопки
+
+        if (!cartBtn) {
+            console.error('Cart button not found');
+            return;
+        }
+
+        let counter = cartBtn.querySelector('.cart-counter');
+        console.log('Existing counter:', counter); // Проверим существующий счетчик
+        
+        if (data.total_items && data.total_items > 0) {
+            console.log('Total items:', data.total_items); // Проверим количество
+            if (!counter) {
+                counter = document.createElement('div');
+                counter.className = 'cart-counter';
+                cartBtn.appendChild(counter);
+                console.log('Created new counter');
+            }
+            counter.textContent = data.total_items;
+            counter.style.display = 'flex';
+            console.log('Updated counter:', counter);
+        } else if (counter) {
+            counter.remove();
+            console.log('Removed counter');
+        }
+    } catch (error) {
+        console.error('Error updating cart counter:', error);
+    }
+}
+
+// Экспортируем функцию, чтобы она была доступна в других скриптах
+window.updateCartCounter = updateCartCounter; 

@@ -22,9 +22,7 @@
             
             <nav class="main-nav">
                 <ul class="nav-list">
-                    <li><a href="#" class="nav-link">Каталог</a></li>
-                    <li><a href="#" class="nav-link">О нас</a></li>
-                    <li><a href="#" class="nav-link">Контакты</a></li>
+                    <li><a href="{% url 'games_list' %}" class="nav-link">Все игры</a></li>
                 </ul>
             </nav>
 
@@ -103,6 +101,32 @@
                 {% else %}
                     <p>Игры не найдены.</p>
                 {% endif %}
+            </div>
+        </div>
+
+        <!-- После секции game-cards-container -->
+        <div class="categories-section">
+            <h2 class="section-title">Топовые категории</h2>
+            <div class="categories-grid">
+                {% for category in categories %}
+                <a href="/shopapp/games/?category={{ category.id }}" class="category-card" data-category-id="{{ category.id }}">
+                    <div class="category-overlay"></div>
+                    <div class="category-images">
+                        {% for image_url in category.image_urls %}
+                            <img src="{{ image_url }}" alt="" class="category-image">
+                        {% empty %}
+                            <div class="category-fallback">
+                                {{ category.name|make_list|first }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="category-info">
+                        <span class="category-label">Категория</span>
+                        <h3 class="category-name">{{ category.name }}</h3>
+                        <span class="category-count">{{ category.count }} игр</span>
+                    </div>
+                </a>
+                {% endfor %}
             </div>
         </div>
         {% endblock %}

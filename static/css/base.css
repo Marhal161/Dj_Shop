@@ -364,18 +364,19 @@ body {
 }
 
 .logout-button {
-    background-color: #e74c3c;
+    background: #e74c3c;
     color: white;
     border: none;
     padding: 8px 16px;
     border-radius: 4px;
     cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.3s ease;
+    font-size: 14px;
+    margin-left: 15px;
+    transition: background-color 0.3s;
 }
 
 .logout-button:hover {
-    background-color: #c0392b;
+    background: #c0392b;
 }
 
 .login-btn {
@@ -412,4 +413,303 @@ body {
     width: 100%;
     height: 100%;
     object-fit: contain;
+}
+
+/* Текстовая информация */
+.category-info {
+    position: absolute;
+    z-index: 6;
+    bottom: 0;
+    width: 100%;
+    padding: 20px;
+    text-align: center;
+}
+
+.category-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+    margin-bottom: 5px;
+    display: block;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.category-name {
+    font-size: 2rem;
+    color: #fff;
+    margin: 10px 0;
+    font-weight: 800;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4);
+    letter-spacing: 1px;
+    position: relative;
+    display: inline-block;
+    max-width: 90%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.category-name::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40%;
+    height: 3px;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.category-count {
+    color: #fff;
+    font-size: 1.1rem;
+    display: block;
+    font-weight: 500;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    margin-top: 10px;
+}
+
+/* Стили для сетки категорий */
+.categories-section {
+    padding: 0 35px 60px;
+    overflow: hidden;
+}
+
+.categories-grid {
+    display: flex;
+    gap: 30px;
+    margin-top: 30px;
+    padding: 40px 20px; /* Увеличиваем padding чтобы карточки не обрезались при раскрытии */
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Скрываем скроллбар для Chrome, Safari и Opera */
+.categories-grid::-webkit-scrollbar {
+    height: 8px;
+}
+
+.categories-grid::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.categories-grid::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.categories-grid::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Скрываем скроллбар для Firefox */
+.categories-grid {
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
+}
+
+.category-card {
+    position: relative;
+    min-height: 450px;
+    min-width: 350px;
+    flex: 0 0 auto;
+    border-radius: 10px;
+    overflow: visible;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    scroll-snap-align: start;
+    background: transparent; /* Меняем на прозрачный */
+    box-shadow: none; /* Убираем тень с основной карточки */
+    padding-bottom: 80px;
+    text-decoration: none;
+    display: block;
+}
+
+/* Добавляем фоновый элемент */
+.category-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.5s ease;
+    z-index: 1;
+}
+
+/* Помещаем контент над фоном */
+.category-images {
+    position: absolute;
+    width: 100%;
+    height: calc(100% - 80px);
+    perspective: 1000px;
+    transform-style: preserve-3d;
+    z-index: 2;
+}
+
+.category-image {
+    position: absolute;
+    width: 65%; /* Немного уменьшаем ширину */
+    height: 65%; /* Уменьшаем высоту */
+    left: 17.5%;
+    top: 10%;
+    object-fit: contain;
+    border-radius: 0; /* Убираем скругление */
+    box-shadow: none; /* Убираем тень */
+    transition: transform 0.5s ease;
+    transform-origin: bottom center;
+    background: transparent; /* Убираем фон */
+}
+
+/* Обновляем стили для информации категории */
+.category-info {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    padding: 0 20px;
+    text-align: center;
+    z-index: 2;
+    transition: transform 0.5s ease;
+}
+
+.category-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #666; /* Меняем цвет на темный */
+    margin-bottom: 5px;
+    display: block;
+}
+
+.category-name {
+    font-size: 1.8rem; /* Немного уменьшаем размер */
+    color: #333; /* Меняем цвет на темный */
+    margin: 5px 0;
+    font-weight: 800;
+    letter-spacing: 1px;
+    position: relative;
+    display: inline-block;
+    max-width: 90%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.category-name::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40%;
+    height: 3px;
+    background: #333; /* Меняем цвет на темный */
+}
+
+.category-count {
+    color: #666; /* Меняем цвет на темный */
+    font-size: 1.1rem;
+    display: block;
+    font-weight: 500;
+    margin-top: 10px;
+}
+
+/* Обновляем позиции для эффекта веера */
+.category-image:nth-child(1) {
+    transform: translateZ(3px) translateY(0) rotate(-2deg);
+}
+
+.category-image:nth-child(2) {
+    transform: translateZ(2px) translateY(15px) rotate(-1deg);
+}
+
+.category-image:nth-child(3) {
+    transform: translateZ(1px) translateY(30px) rotate(1deg);
+}
+
+.category-image:nth-child(4) {
+    transform: translateZ(0) translateY(45px) rotate(2deg);
+}
+
+/* Обновляем эффект веера при наведении */
+.category-card:hover .category-image:nth-child(1) {
+    transform: translateZ(3px) translateY(-50px) rotate(-15deg);
+}
+
+.category-card:hover .category-image:nth-child(2) {
+    transform: translateZ(2px) translateY(-35px) rotate(-5deg);
+}
+
+.category-card:hover .category-image:nth-child(3) {
+    transform: translateZ(1px) translateY(-35px) rotate(5deg);
+}
+
+.category-card:hover .category-image:nth-child(4) {
+    transform: translateZ(0) translateY(-50px) rotate(15deg);
+}
+
+/* Добавляем эффект подъема для информации при наведении */
+.category-card:hover .category-info {
+    transform: translateY(-20px);
+}
+
+/* Анимируем фон при наведении */
+.category-card:hover::before {
+    transform: translateY(-20px);
+}
+
+/* Обновляем медиа-запросы */
+@media (max-width: 768px) {
+    .category-card {
+        min-width: 300px;
+        min-height: 400px;
+    }
+}
+
+@media (max-width: 480px) {
+    .category-card {
+        min-width: 280px;
+        min-height: 380px;
+    }
+    
+    .categories-section {
+        padding: 0 15px 60px;
+    }
+}
+
+/* Убираем подчеркивание для всех ссылок внутри карточки */
+.category-card * {
+    text-decoration: none;
+}
+
+.cart-btn {
+    position: relative;
+    display: inline-block;
+    z-index: 1; /* Добавим z-index для родителя */
+}
+
+.cart-counter {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #e74c3c;
+    color: white;
+    border-radius: 50%;
+    min-width: 20px;
+    height: 20px;
+    display: flex !important; /* Принудительно показываем */
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 0 4px;
+    z-index: 2; /* Увеличим z-index */
+    pointer-events: none; /* Чтобы счетчик не мешал кликам */
 } 

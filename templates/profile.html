@@ -21,23 +21,18 @@
             
             <nav class="main-nav">
                 <ul class="nav-list">
-                    <li><a href="#" class="nav-link">Каталог</a></li>
-                    <li><a href="#" class="nav-link">О нас</a></li>
-                    <li><a href="#" class="nav-link">Контакты</a></li>
+                    <li><a href="{% url 'games_list' %}" class="nav-link">Все игры</a></li>
                 </ul>
             </nav>
 
-            <div class="user-actions">
-                <div class="user-menu">
-                    <div class="cart">
-                        <a href="/cart/" class="cart-link">
-                            <img src="/static/images/cart.png" alt="Корзина" style="width: 40px; height: auto;">
-                        </a>
-                    </div>
-                    <div class="user-menu">
-                        <button type="button" class="logout-button" onclick="handleLogout(event)">Выйти</button>
-                    </div>
-                </div>
+            <div class="user-controls">
+                <a href="/shopapp/profile/" class="profile-btn">
+                    <img src="/static/images/profile.png" alt="Профиль">
+                </a>
+                <a href="/shopapp/cart/" class="cart-btn">
+                    <img src="/static/images/cart.png" alt="Корзина">
+                </a>
+                <button type="button" class="logout-button" onclick="handleLogout(event)">Выйти</button>
             </div>
         </div>
     </header>
@@ -52,6 +47,11 @@
             <div class="profile-content">
                 <!-- Информация профиля -->
                 <div class="profile-section">
+                    <div class="profile-avatar">
+                        <div class="avatar-circle">
+                            <span class="initials"></span>
+                        </div>
+                    </div>
                     <h2>Личные данные</h2>
                     <form id="profileForm" class="profile-form">
                         <div class="form-group">
@@ -89,7 +89,19 @@
                 <div class="transactions-section">
                     <h2>История операций</h2>
                     <div id="transactionsList" class="transactions-list">
-                        <!-- Транзакции будут добавляться динамически -->
+                        <!-- Добавим вкладки -->
+                        <div class="tabs">
+                            <button class="tab-button active" data-tab="balance">Баланс</button>
+                            <button class="tab-button" data-tab="purchases">Покупки</button>
+                        </div>
+                        
+                        <div class="tab-content active" id="balance-tab">
+                            <!-- Существующий список транзакций -->
+                        </div>
+                        
+                        <div class="tab-content" id="purchases-tab">
+                            <!-- Список покупок будет добавлен через JavaScript -->
+                        </div>
                     </div>
                 </div>
             </div>

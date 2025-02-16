@@ -27,4 +27,9 @@ def balance_page(request):
         'page_title': 'Пополнение баланса',
         'show_balance_form': True
     })
+
+def cart_page(request):
+    return render(request, 'cart.html', {
+        'is_authenticated': request.user.is_authenticated
+    })
     

@@ -11,6 +11,18 @@
     <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
 </head>
 <body>
+    {% if debug %}
+    <div style="display:none">
+        Debug info:
+        {% for screenshot in screenshots %}
+            <div>
+                Path: {{ screenshot.image.path }}
+                URL: {{ screenshot.image.url }}
+                Exists: {{ screenshot.image.storage.exists }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
         <!-- Хедер -->
         <header class="header">
             <div class="header-container">
@@ -22,17 +34,15 @@
                 
                 <nav class="main-nav">
                     <ul class="nav-list">
-                        <li><a href="#" class="nav-link">Каталог</a></li>
-                        <li><a href="#" class="nav-link">О нас</a></li>
-                        <li><a href="#" class="nav-link">Контакты</a></li>
+                        <li><a href="{% url 'games_list' %}" class="nav-link">Все игры</a></li>
                     </ul>
                 </nav>
     
                 <div class="user-controls">
-                    <a href="/profile/" class="profile-btn">
+                    <a href="/shopapp/profile/" class="profile-btn">
                         <img src="{% static 'images/profile.png' %}" alt="Профиль">
                     </a>
-                    <a href="/cart/" class="cart-btn">
+                    <a href="/shopapp/cart/" class="cart-btn">
                         <img src="{% static 'images/cart.png' %}" alt="Корзина">
                     </a>
                     {% if is_authenticated %}
@@ -61,31 +71,20 @@
                 </div>
                 
                 <div class="game-images">
-                    <button class="slider-button prev">❮</button>
-                    <button class="slider-button next">❯</button>
-                    
-                    <div class="screenshots-container">
+                    <div class="main-screenshot">
                         {% if screenshots %}
-                            {% for screenshot in screenshots %}
-                                <div class="game-screenshot">
-                                    <img src="{{ screenshot.image.url }}" alt="Скриншот {{ screenshot.get_order_display }}">
-                                </div>
-                            {% endfor %}
+                            <img src="{{ screenshots.0.image.url }}" alt="Основное изображение">
                         {% else %}
-                            <div class="game-screenshot">
-                                <img src="/static/images/default-game.jpg" alt="Изображение отсутствует">
-                            </div>
+                            <img src="{% static 'images/default-game.jpg' %}" alt="Изображение отсутствует">
                         {% endif %}
                     </div>
                     
-                    <div class="slider-indicators">
-                        {% if screenshots %}
-                            {% for screenshot in screenshots %}
-                                <div class="indicator {% if forloop.first %}active{% endif %}" data-index="{{ forloop.counter0 }}"></div>
-                            {% endfor %}
-                        {% else %}
-                            <div class="indicator active" data-index="0"></div>
-                        {% endif %}
+                    <div class="thumbnails-container">
+                        {% for screenshot in screenshots %}
+                            <div class="thumbnail" data-src="{{ screenshot.image.url }}" onclick="console.log('Thumbnail clicked')">
+                                <img src="{{ screenshot.image.url }}" alt="Миниатюра {{ forloop.counter }}">
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
 
@@ -110,9 +109,10 @@
 
                 <div class="game-actions">
                     {% if request.user.is_authenticated %}
-                        <button class="buy-button">Купить</button>
+                        <button class="add-to-cart-button" data-game-id="{{ game.id }}">Добавить в корзину</button>
+                        <a href="/shopapp/cart/" class="view-cart-button">Перейти в корзину</a>
                     {% else %}
-                        <a href="/auth/" class="buy-button">Войдите, чтобы купить</a>
+                        <a href="/shopapp/auth/" class="buy-button">Войдите, чтобы купить</a>
                     {% endif %}
                 </div>
 
@@ -123,9 +123,9 @@
                     </div>
                     
                     {% if request.user.is_authenticated %}
-                        <div class="review-form">
-                            <h3>Оставить отзыв</h3>
-                            <form id="review-form">
+                        <div class="review-section">
+                            <h2>Оставить отзыв</h2>
+                            <form id="review-form" data-product-id="{{ game.id }}">
                                 <div class="rating-input">
                                     <label>Оценка:</label>
                                     <div class="star-rating">
@@ -138,8 +138,8 @@
                                     <input type="hidden" name="rating" id="rating-value" value="0">
                                 </div>
                                 <div class="comment-input">
-                                    <label>Комментарий:</label>
-                                    <textarea name="comment" required></textarea>
+                                    <label for="comment">Комментарий:</label>
+                                    <textarea name="comment" id="comment" required></textarea>
                                 </div>
                                 <button type="submit">Отправить отзыв</button>
                             </form>
@@ -151,7 +151,7 @@
     </main>
 
     <script src="/static/js/base.js"></script>
-    <script src="{% static 'js/reviews.js' %}"></script>
     <script src="{% static 'js/auth.js' %}"></script>
+    <script src="{% static 'js/game_detail.js' %}"></script>
 </body>
 </html>

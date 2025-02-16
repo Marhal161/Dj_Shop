@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Корзина</title>
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/cart.css">
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+</head>
+<body>
+    <!-- Хедер -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="/shopapp/">
+                    <img src="/static/images/logo.png" alt="Логотип" style="width: 100px; height: auto;">
+                </a>
+            </div>
+            
+            <nav class="main-nav">
+                <ul class="nav-list">
+                    <li><a href="{% url 'games_list' %}" class="nav-link">Все игры</a></li>
+                </ul>
+            </nav>
+
+            <div class="user-controls">
+                <a href="/shopapp/profile/" class="profile-btn">
+                    <img src="/static/images/profile.png" alt="Профиль">
+                </a>
+                <a href="/shopapp/cart/" class="cart-btn">
+                    <img src="/static/images/cart.png" alt="Корзина">
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="cart-container">
+            <h1>Корзина</h1>
+            
+            <div id="cart-items" class="cart-items">
+                <!-- Товары будут добавлены через JavaScript -->
+            </div>
+
+            <div class="cart-summary">
+                <div class="cart-total">
+                    Итого: <span id="cart-total-price">0</span> ₽
+                </div>
+                <button id="checkout-button" class="checkout-button">Оформить покупку</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>О компании</h3>
+                <ul>
+                    <li><a href="/about/">О нас</a></li>
+                    <li><a href="/contacts/">Контакты</a></li>
+                    <li><a href="/delivery/">Доставка</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Покупателям</h3>
+                <ul>
+                    <li><a href="/how-to-buy/">Как купить</a></li>
+                    <li><a href="/payment/">Оплата</a></li>
+                    <li><a href="/returns/">Возврат</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Контакты</h3>
+                <p>Телефон: +7 (999) 123-45-67</p>
+                <p>Email: info@example.com</p>
+                <div class="social-links">
+                    <a href="#" class="social-link">VK</a>
+                    <a href="#" class="social-link">Telegram</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Название компании. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script src="/static/js/base.js"></script>
+    <script src="/static/js/cart.js"></script>
+</body>
+</html> 

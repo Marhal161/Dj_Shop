@@ -103,6 +103,15 @@
     font-weight: bold;
 }
 
+.transaction-amount.success {
+    color: #2ecc71;
+}
+
+.transaction-amount.failed {
+    color: #e74c3c;
+    font-style: italic;
+}
+
 .transaction-amount.deposit {
     color: #2ecc71;
 }
@@ -152,4 +161,89 @@
         transform: translateX(0);
         opacity: 1;
     }
+}
+
+/* Стили для аватара */
+.profile-avatar {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.avatar-circle {
+    width: 120px;
+    height: 120px;
+    background: #2ecc71;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(46, 204, 113, 0.2);
+}
+
+.initials {
+    font-size: 2.5rem;
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Анимация появления */
+@keyframes avatarAppear {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.avatar-circle {
+    animation: avatarAppear 0.3s ease-out forwards;
+}
+
+.transaction-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.transaction-details {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.transaction-type {
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.transaction-date {
+    color: #7f8c8d;
+    font-size: 0.85em;
+}
+
+.transaction-amount {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.game-key {
+    font-family: monospace;
+    background: #f8f9fa;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: #2c3e50;
+    margin: 4px 0;
+}
+
+.game-key span {
+    font-weight: bold;
+    color: #2ecc71;
 } 

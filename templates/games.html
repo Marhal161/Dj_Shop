@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Все игры</title>
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+    <link rel="icon" type="image/png" href="/static/images/favicon.png">
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/games.css">
+</head>
+<body>
+    <!-- Хедер -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="/shopapp/">
+                    <img src="/static/images/logo.png" alt="Логотип" style="width: 100px; height: auto;">
+                </a>
+            </div>
+            
+            <nav class="main-nav">
+                <ul class="nav-list">
+                    <li><a href="/shopapp/games/" class="nav-link">Все игры</a></li>
+                </ul>
+            </nav>
+
+            <div class="user-controls">
+                <a href="/shopapp/profile/" class="profile-btn">
+                    <img src="/static/images/profile.png" alt="Профиль">
+                </a>
+                <a href="/shopapp/cart/" class="cart-btn">
+                    <img src="/static/images/cart.png" alt="Корзина">
+                </a>
+                <div class="user-menu">
+                    <button type="button" class="logout-button" onclick="handleLogout(event)">Выйти</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="main-content">
+        <div class="games-page">
+            <!-- Добавляем кнопку для открытия фильтров -->
+            <button class="filters-toggle" id="filters-toggle">
+                <span>Фильтры</span>
+            </button>
+
+            <!-- Добавляем кнопку закрытия в сайдбар -->
+            <div class="filters-sidebar" id="filters-sidebar">
+                <div class="filters-header">
+                    <h3>Фильтры</h3>
+                    <button class="filters-close" id="filters-close">✕</button>
+                </div>
+                <form id="filters-form" method="GET">
+                    <!-- Поиск по названию -->
+                    <div class="filter-section">
+                        <h4>Поиск</h4>
+                        <input type="text" 
+                               id="search-input" 
+                               name="search" 
+                               placeholder="Введите название игры"
+                               class="search-input">
+                    </div>
+
+                    <div class="filter-section">
+                        <h4>Категории</h4>
+                        <div id="categories-container">
+                            <!-- Категории будут добавлены через JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Фильтр по рейтингу -->
+                    <div class="filter-section">
+                        <h4>Рейтинг</h4>
+                        <div class="rating-filter">
+                            <label>
+                                <input type="checkbox" name="rating" value="1"> 1 звезда
+                            </label>
+                            <label>
+                                <input type="checkbox" name="rating" value="2"> 2 звезды
+                            </label>
+                            <label>
+                                <input type="checkbox" name="rating" value="3"> 3 звезды
+                            </label>
+                            <label>
+                                <input type="checkbox" name="rating" value="4"> 4 звезды
+                            </label>
+                            <label>
+                                <input type="checkbox" name="rating" value="5"> 5 звезд
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="filter-section">
+                        <h4>Цена</h4>
+                        <div class="price-range">
+                            <input type="number" 
+                                   id="min-price" 
+                                   name="min_price" 
+                                   placeholder="От">
+                            <input type="number" 
+                                   id="max-price" 
+                                   name="max_price" 
+                                   placeholder="До">
+                        </div>
+                    </div>
+
+                    <div class="filter-section">
+                        <h4>Сортировка</h4>
+                        <select id="sort-select" name="sort" class="sort-select">
+                            <option value="name">По названию</option>
+                            <option value="price_asc">Цена: по возрастанию</option>
+                            <option value="price_desc">Цена: по убыванию</option>
+                            <option value="newest">Сначала новые</option>
+                        </select>
+                    </div>
+
+                    <button type="button" class="reset-filters" onclick="resetFilters()">Сбросить</button>
+                </form>
+            </div>
+
+            <div class="games-grid">
+                <h2 class="games-title">Все игры</h2>
+                <div class="games-container" id="games-container">
+                    <!-- Игры будут добавлены через JavaScript -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>О компании</h3>
+                <ul>
+                    <li><a href="/about/">О нас</a></li>
+                    <li><a href="/contacts/">Контакты</a></li>
+                    <li><a href="/delivery/">Доставка</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Покупателям</h3>
+                <ul>
+                    <li><a href="/how-to-buy/">Как купить</a></li>
+                    <li><a href="/payment/">Оплата</a></li>
+                    <li><a href="/returns/">Возврат</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Контакты</h3>
+                <p>Телефон: +7 (999) 123-45-67</p>
+                <p>Email: info@example.com</p>
+                <div class="social-links">
+                    <a href="#" class="social-link">VK</a>
+                    <a href="#" class="social-link">Telegram</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Название компании. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script src="/static/js/base.js"></script>
+    <script src="/static/js/logout.js"></script>
+    <script src="/static/js/games.js"></script>
+</body>
+</html> 

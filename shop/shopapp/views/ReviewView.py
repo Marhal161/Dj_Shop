@@ -34,11 +34,18 @@ class ReviewView(APIView):
             logger.debug(f"Found {reviews.count()} reviews")
             
             # Сериализуем отзывы
-            serializer = ReviewSerializer(reviews, many=True)
+            reviews_data = [{
+                'id': review.id,
+                'user': review.user.get_full_name() or review.user.username,
+                'rating': review.rating,
+                'comment': review.comment,
+                'created_at': review.created_at,
+                'is_owner': review.is_owner(request.user)
+            } for review in reviews]
 
             return Response({
                 'success': True,
-                'reviews': serializer.data
+                'reviews': reviews_data
             }, status=status.HTTP_200_OK)
 
         except Exception as e:
@@ -51,39 +58,69 @@ class ReviewView(APIView):
     @method_decorator(check_auth_tokens)
     def post(self, request):
         try:
-            logger.debug(f"POST request data: {request.data}")
-            # Получаем пользователя из токена
-            access_token = request.COOKIES.get('access_token')
-            token = AccessToken(access_token)
-            user_id = token.payload.get('user_id')
-            
-            logger.debug(f"User ID from token: {user_id}")
-            user = User.objects.get(id=user_id)
-            logger.debug(f"Found user: {user}")
+            # Получаем данные из запроса
+            product_id = request.data.get('product_id')
+            rating = request.data.get('rating')
+            comment = request.data.get('comment')
 
-            # Создаем сериализатор с данными и контекстом
-            serializer = ReviewSerializer(data=request.data, context={'user': user})
-            
-            if serializer.is_valid():
-                logger.debug(f"Serializer is valid: {serializer.validated_data}")
-                review = serializer.save()
-                logger.debug(f"Review saved: {review}")
+            # Проверяем наличие всех необходимых данных
+            if not all([product_id, rating, comment]):
                 return Response({
-                    'success': True,
-                    'review': serializer.data
-                }, status=status.HTTP_201_CREATED)
-            
-            logger.error(f"Serializer errors: {serializer.errors}")
+                    'error': 'Необходимо указать product_id, rating и comment'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # Создаем отзыв
+            review = Review.objects.create(
+                product_id=product_id,
+                user=request.user,
+                rating=rating,
+                comment=comment
+            )
+
+            # Возвращаем данные с именем пользователя
             return Response({
-                'success': False,
-                'errors': serializer.errors
-            }, status=status.HTTP_400_BAD_REQUEST)
+                'success': True,
+                'review': {
+                    'id': review.id,
+                    'user': review.user.get_full_name() or review.user.username,
+                    'rating': review.rating,
+                    'comment': review.comment,
+                    'created_at': review.created_at,
+                    'is_owner': True
+                }
+            }, status=status.HTTP_201_CREATED)
 
         except Exception as e:
             logger.error(f"Error in POST review: {str(e)}", exc_info=True)
             return Response({
-                'success': False,
                 'error': str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class ReviewDeleteView(APIView):
+    @method_decorator(check_auth_tokens)
+    def delete(self, request, review_id):
+        try:
+            review = Review.objects.get(id=review_id)
+            
+            # Проверяем, является ли пользователь владельцем отзыва
+            if not review.is_owner(request.user):
+                return Response(
+                    {'error': 'У вас нет прав для удаления этого отзыва'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            
+            review.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+            
+        except Review.DoesNotExist:
+            return Response(
+                {'error': 'Отзыв не найден'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
             
