@@ -14,9 +14,27 @@ def check_auth_tokens(view_func):
         access_token = request.COOKIES.get('access_token')
         refresh_token = request.COOKIES.get('refresh_token')
 
-        if not access_token or not refresh_token:
-            logger.debug(f"Токены отсутствуют. access_token: {bool(access_token)}, refresh_token: {bool(refresh_token)}")
+        if not refresh_token:
+            logger.debug("Refresh токен отсутствует")
             return redirect('auth')
+
+        if not access_token:
+            logger.debug("Access токен отсутствует, пробуем создать новый из refresh токена")
+            try:
+                refresh = RefreshToken(refresh_token)
+                access_token = str(refresh.access_token)
+                
+                # Получаем пользователя из refresh токена
+                user_id = refresh['user_id']
+                User = get_user_model()
+                request.user = User.objects.get(id=user_id)
+                
+                response = view_func(request, *args, **kwargs)
+                response.set_cookie('access_token', access_token, httponly=True)
+                return response
+            except (TokenError, InvalidToken) as refresh_error:
+                logger.debug(f"Refresh токен невалиден: {str(refresh_error)}")
+                return redirect('auth')
 
         try:
             # Получаем пользователя из токена

@@ -141,9 +141,9 @@ async function loadCategories() {
         if (categoryIds.length > 0) {
             categoryIds.forEach(id => {
                 const checkbox = categoriesContainer.querySelector(`input[value="${id}"]`);
-                if (checkbox) {
-                    checkbox.checked = true;
-                }
+            if (checkbox) {
+                checkbox.checked = true;
+            }
             });
         }
     } catch (error) {
