@@ -6,6 +6,7 @@
     <title>Корзина</title>
     <link rel="stylesheet" href="/static/css/base.css">
     <link rel="stylesheet" href="/static/css/cart.css">
+    <link rel="stylesheet" href="/static/css/notifications.css">
     <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
 </head>
 <body>
@@ -13,7 +14,7 @@
     <header class="header">
         <div class="header-container">
             <div class="logo">
-                <a href="/shopapp/">
+                <a href="/app/">
                     <img src="/static/images/logo.png" alt="Логотип" style="width: 100px; height: auto;">
                 </a>
             </div>
@@ -25,10 +26,10 @@
             </nav>
 
             <div class="user-controls">
-                <a href="/shopapp/profile/" class="profile-btn">
+                <a href="/app/profile/" class="profile-btn">    
                     <img src="/static/images/profile.png" alt="Профиль">
                 </a>
-                <a href="/shopapp/cart/" class="cart-btn">
+                <a href="/app/cart/" class="cart-btn">
                     <img src="/static/images/cart.png" alt="Корзина">
                 </a>
             </div>
@@ -36,11 +37,16 @@
     </header>
 
     <main class="main-content">
+        {% csrf_token %}
         <div class="cart-container">
             <h1>Корзина</h1>
             
             <div id="cart-items" class="cart-items">
-                <!-- Товары будут добавлены через JavaScript -->
+                <div class="cart-item">
+                    <button class="decrease-btn">-</button>
+                    <span class="item-quantity">1</span>
+                    <button class="increase-btn">+</button>
+                </div>
             </div>
 
             <div class="cart-summary">

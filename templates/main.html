@@ -15,30 +15,40 @@
     <header class="header">
         <div class="header-container">
             <div class="logo">
-                <a href="/shopapp/">
-                    <img src="{% static 'images/logo.png' %}" alt="Логотип" style="width: 100px; height: auto;">
+                <a href="/app/" aria-label="Перейти на главную страницу">
+                    <img src="{% static 'images/logo.png' %}" alt="Логотип DJ Shop">
                 </a>
             </div>
             
-            <nav class="main-nav">
+            <nav class="main-nav" role="navigation" aria-label="Основная навигация">
                 <ul class="nav-list">
                     <li><a href="{% url 'games_list' %}" class="nav-link">Все игры</a></li>
                 </ul>
             </nav>
 
             <div class="user-controls">
-                <a href="/shopapp/profile/" class="profile-btn">
+                <!-- Мобильная кнопка меню -->
+                <button class="mobile-menu-btn" aria-label="Открыть меню" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                
+                <a href="/app/profile/" class="profile-btn" aria-label="Перейти в профиль">
                     <img src="{% static 'images/profile.png' %}" alt="Профиль">
                 </a>
-                <a href="/shopapp/cart/" class="cart-btn">
+                <a href="/app/cart/" class="cart-btn" aria-label="Перейти в корзину">
                     <img src="{% static 'images/cart.png' %}" alt="Корзина">
+                    {% if cart_count and cart_count > 0 %}
+                        <span class="cart-counter" aria-label="В корзине {{ cart_count }} товаров">{{ cart_count }}</span>
+                    {% endif %}
                 </a>
                 {% if is_authenticated %}
                     <div class="user-menu">
-                        <button type="button" class="logout-button" onclick="handleLogout(event)">Выйти</button>
+                        <button type="button" class="logout-button" onclick="handleLogout(event)" aria-label="Выйти из аккаунта">Выйти</button>
                     </div>
                 {% else %}
-                    <a href="/shopapp/auth/" class="login-btn">Войти</a>
+                    <a href="/app/auth/" class="auth-btn">Войти</a>
                 {% endif %}
             </div>
         </div>
@@ -54,7 +64,9 @@
                     {% for game in games %}
                     <div class="game-card">
                         <a href="{% url 'game_detail' game.id %}" class="game-link">
-                            <h3 class="game-title">{{ game.name }}</h3>
+                            <div class="game-header">
+                                <h3 class="game-title">{{ game.name }}</h3>
+                            </div>
                             <div class="game-image-container">
                                 {% if game.screenshots.all %}
                                     {% with first_screenshot=game.screenshots.first %}
@@ -78,7 +90,35 @@
                     {% for game in games %}
                     <div class="game-card">
                         <a href="{% url 'game_detail' game.id %}" class="game-link">
-                            <h3 class="game-title">{{ game.name }}</h3>
+                            <div class="game-header">
+                                <h3 class="game-title">{{ game.name }}</h3>
+                            </div>
+                            <div class="game-image-container">
+                                {% if game.screenshots.all %}
+                                    {% with first_screenshot=game.screenshots.first %}
+                                        <img 
+                                            src="{{ first_screenshot.image.url }}" 
+                                            alt="Скриншот {{ game.name }}" 
+                                            class="game-image"
+                                        />
+                                    {% endwith %}
+                                {% endif %}
+                            </div>
+                            <div class="game-info">
+                                <p class="game-price">{{ game.price }} ₽</p>
+                                <p class="game-quantity">Количество: {{ game.available_quantity }}</p>
+                                <button class="buy-button">Купить</button>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                    <!-- Третий набор для еще более плавной прокрутки -->
+                    {% for game in games %}
+                    <div class="game-card">
+                        <a href="{% url 'game_detail' game.id %}" class="game-link">
+                            <div class="game-header">
+                                <h3 class="game-title">{{ game.name }}</h3>
+                            </div>
                             <div class="game-image-container">
                                 {% if game.screenshots.all %}
                                     {% with first_screenshot=game.screenshots.first %}
@@ -109,7 +149,7 @@
             <h2 class="section-title">Топовые категории</h2>
             <div class="categories-grid">
                 {% for category in categories %}
-                <a href="/shopapp/games/?category={{ category.id }}" class="category-card" data-category-id="{{ category.id }}">
+                <a href="/app/games/?category={{ category.id }}" class="category-card" data-category-id="{{ category.id }}">
                     <div class="category-overlay"></div>
                     <div class="category-images">
                         {% for image_url in category.image_urls %}
@@ -169,7 +209,44 @@
     </footer>
 
     <script src="{% static 'js/base.js' %}"></script>
-    <script src="{% static 'js/logout.js' %}"></script>
     {% block extra_js %}{% endblock %}
+    
+    <script>
+        // Обработка скроллинга для хедера
+        let lastScrollTop = 0;
+        const header = document.querySelector('.header');
+        
+        window.addEventListener('scroll', function() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            // Добавляем/убираем класс scrolled для изменения стиля хедера
+            if (scrollTop > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+            
+            lastScrollTop = scrollTop;
+        });
+
+        // Обработка логаута
+        function handleLogout(event) {
+            event.preventDefault();
+            if (confirm('Вы действительно хотите выйти?')) {
+                window.location.href = '/app/logout/';
+            }
+        }
+
+        // Улучшенная анимация для кнопок
+        document.querySelectorAll('.profile-btn, .cart-btn, .auth-btn').forEach(btn => {
+            btn.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px) scale(1.02)';
+            });
+            
+            btn.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    </script>
 </body>
 </html> 

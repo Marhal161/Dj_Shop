@@ -22,7 +22,7 @@ from django.views.static import serve
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('shopapp/', include('shopapp.urls')),
+    path('app/', include('shopapp.urls')),
     path('media/<path:path>', serve, {
         'document_root': settings.MEDIA_ROOT,
     }),

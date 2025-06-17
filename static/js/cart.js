@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+ document.addEventListener('DOMContentLoaded', function() {
     loadCart();
 
     // Добавляем обработчик для кнопки оформления заказа
@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function loadCart() {
     try {
-        const response = await fetch('/shopapp/api/cart/', {
+        const response = await fetch('/app/api/cart/', {
             credentials: 'include'
         });
         const data = await response.json();
@@ -51,21 +51,57 @@ function updateCartDisplay(data) {
 }
 
 async function updateQuantity(itemId, change) {
-    // Реализация обновления количества
+    try {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const response = await fetch(`/app/api/cart/items/${itemId}/update/`, {
+            method: 'PATCH',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({ change: change })
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+            if (data.error) {
+                showNotification(data.error, 'error');
+            } else {
+                loadCart();
+                if (change > 0) {
+                    showNotification('Количество товара увеличено', 'success');
+                } else {
+                    showNotification('Количество товара уменьшено', 'success');
+                }
+            }
+        } else {
+            showNotification(data.error || 'Ошибка при обновлении количества', 'error');
+        }
+    } catch (error) {
+        console.error('Error updating quantity:', error);
+        showNotification('Ошибка при обновлении количества', 'error');
+    }
 }
 
 async function removeItem(itemId) {
     try {
-        const response = await fetch(`/shopapp/api/cart/items/${itemId}/`, {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const response = await fetch(`/app/api/cart/items/${itemId}/`, {
             method: 'DELETE',
-            credentials: 'include'
+            credentials: 'include',
+            headers: {
+                'X-CSRFToken': csrfToken
+            }
         });
 
         if (response.ok) {
             loadCart();
             showNotification('Товар удален из корзины', 'success');
         } else {
-            throw new Error('Failed to remove item');
+            const errorData = await response.json();
+            showNotification(errorData.error || 'Ошибка при удалении товара', 'error');
         }
     } catch (error) {
         console.error('Error removing item:', error);
@@ -75,7 +111,7 @@ async function removeItem(itemId) {
 
 async function handleCheckout() {
     try {
-        const response = await fetch('/shopapp/api/cart/checkout/', {
+        const response = await fetch('/app/api/cart/checkout/', {
             method: 'POST',
             credentials: 'include'
         });
@@ -127,13 +163,21 @@ function showPurchaseSuccess(data) {
 }
 
 function showNotification(message, type) {
+    // Удаляем предыдущие уведомления
+    const existingNotifications = document.querySelectorAll('.notification');
+    existingNotifications.forEach(notification => notification.remove());
+
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
     notification.textContent = message;
     
     document.body.appendChild(notification);
     
+    // Добавляем анимацию исчезновения перед удалением
     setTimeout(() => {
-        notification.remove();
-    }, 3000);
+        notification.style.animation = 'fadeOut 0.5s ease-out';
+        setTimeout(() => {
+            notification.remove();
+        }, 450);
+    }, 2500);
 } 

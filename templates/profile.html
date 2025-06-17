@@ -14,8 +14,8 @@
     <header class="header">
         <div class="header-container">
             <div class="logo">
-                <a href="/shopapp/">
-                    <img src="/static/images/logo.png" alt="Логотип" style="width: 100px; height: auto;">
+                <a href="/app/">
+                    <img src="/static/images/logo.png" alt="Логотип">
                 </a>
             </div>
             
@@ -26,10 +26,17 @@
             </nav>
 
             <div class="user-controls">
-                <a href="/shopapp/profile/" class="profile-btn">
+                <!-- Мобильная кнопка меню -->
+                <button class="mobile-menu-btn" aria-label="Открыть меню" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                
+                <a href="/app/profile/" class="profile-btn">
                     <img src="/static/images/profile.png" alt="Профиль">
                 </a>
-                <a href="/shopapp/cart/" class="cart-btn">
+                <a href="/app/cart/" class="cart-btn">
                     <img src="/static/images/cart.png" alt="Корзина">
                 </a>
                 <button type="button" class="logout-button" onclick="handleLogout(event)">Выйти</button>
@@ -146,5 +153,15 @@
 
     <script src="/static/js/base.js"></script>
     <script src="/static/js/profile.js"></script>
+    
+    <script>
+        // Обработка логаута
+        function handleLogout(event) {
+            event.preventDefault();
+            if (confirm('Вы действительно хотите выйти?')) {
+                window.location.href = '/app/logout/';
+            }
+        }
+    </script>
 </body>
 </html> 

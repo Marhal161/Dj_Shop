@@ -22,7 +22,7 @@ function updateURL(filters) {
 // Функция для загрузки и отображения игр
 async function loadGames(filters = {}) {
     try {
-        let url = '/shopapp/api/games/';
+        let url = '/app/api/games/';
         const params = new URLSearchParams();
 
         if (filters.categories && filters.categories.length > 0) {
@@ -59,7 +59,7 @@ async function loadGames(filters = {}) {
     } catch (error) {
         console.error('Error loading games:', error);
     }
-}
+}   
 
 // Функция для создания карточки игры
 function createGameCard(game) {
@@ -67,7 +67,7 @@ function createGameCard(game) {
     card.className = 'game-card';
     
     card.innerHTML = `
-        <a href="/shopapp/game/${game.id}/" class="game-link">
+        <a href="/app/game/${game.id}/" class="game-link">
             <div class="game-image-container">
                 <img src="${game.screenshot_url || '/static/images/no-image.png'}" 
                      alt="${game.name}" 
@@ -105,7 +105,7 @@ function createGameCard(game) {
 // Функция для загрузки категорий
 async function loadCategories() {
     try {
-        const response = await fetch('/shopapp/api/categories/');
+        const response = await fetch('/app/api/categories/');
         const data = await response.json();
         
         if (!response.ok) {
@@ -349,7 +349,7 @@ async function loadGames() {
     gamesContainer.innerHTML = '<div class="loading">Загрузка...</div>';
 
     try {
-        const response = await fetch(`/shopapp/api/games/${window.location.search}`);
+        const response = await fetch(`/app/api/games/${window.location.search}`);
         const data = await response.json();
         
         if (!response.ok) {
@@ -366,7 +366,7 @@ async function loadGames() {
             card.className = 'game-card';
             
             card.innerHTML = `
-                <a href="/shopapp/game/${game.id}/" class="game-link">
+                <a href="/app/game/${game.id}/" class="game-link">
                     <div class="game-image-container">
                         <img src="${game.screenshot_url || '/static/images/no-image.png'}" 
                              alt="${game.name}" 
@@ -418,7 +418,7 @@ async function loadGames() {
 // Добавляем функцию для добавления в корзину
 async function addToCart(gameId) {
     try {
-        const response = await fetch('/shopapp/api/cart/', {
+        const response = await fetch('/app/api/cart/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -92,7 +92,7 @@ async function handleAddToCart(event) {
         // Получаем CSRF токен из cookie
         const csrftoken = getCookie('csrftoken');
         
-        const response = await fetch('/shopapp/api/cart/', {
+        const response = await fetch('/app/api/cart/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -179,7 +179,7 @@ async function deleteReview(reviewId) {
     }
 
     try {
-        const response = await fetch(`/shopapp/api/review/${reviewId}/`, {
+        const response = await fetch(`/app/api/review/${reviewId}/`, {
             method: 'DELETE',
             headers: {
                 'X-CSRFToken': getCookie('csrftoken')
@@ -220,7 +220,7 @@ async function handleReviewSubmit(event) {
     }
 
     try {
-        const response = await fetch('/shopapp/api/review/', {
+        const response = await fetch('/app/api/review/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -257,7 +257,7 @@ async function handleReviewSubmit(event) {
 // Функция для загрузки отзывов
 async function loadReviews(productId) {
     try {
-        const response = await fetch(`/shopapp/api/review/?product_id=${productId}`);
+        const response = await fetch(`/app/api/review/?product_id=${productId}`);
         const data = await response.json();
 
         if (!response.ok) {

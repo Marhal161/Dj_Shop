@@ -1,7 +1,7 @@
 async function handleLogout(event) {
     event.preventDefault();
     try {
-        const response = await fetch('/shopapp/logout/', {
+        const response = await fetch('/app/logout/', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -11,7 +11,7 @@ async function handleLogout(event) {
 
         if (response.ok) {
             // После успешного выхода перенаправляем на страницу авторизации
-            window.location.href = '/shopapp/auth/';
+            window.location.href = '/app/auth/';
         } else {
             console.error('Ошибка при выходе');
         }

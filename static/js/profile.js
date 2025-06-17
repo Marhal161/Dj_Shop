@@ -3,14 +3,14 @@ async function fetchProfileData() {
     try {
         console.log('Начало загрузки данных профиля');
         const [profileResponse, transactionsResponse] = await Promise.all([
-            fetch('/shopapp/api/profile/', {
+            fetch('/app/api/profile/', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 credentials: 'include'
             }),
-            fetch('/shopapp/api/profile/balance/transactions/', {  // Новый эндпоинт для истории транзакций
+            fetch('/app/api/profile/balance/transactions/', {  // Новый эндпоинт для истории транзакций
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -189,7 +189,7 @@ async function handleProfileUpdate(event) {
     };
 
     try {
-        const response = await fetch('/shopapp/api/profile/', {
+        const response = await fetch('/app/api/profile/', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -219,7 +219,7 @@ async function handleBalanceUpdate(event) {
     console.log('Сумма пополнения:', amount);
     
     try {
-        const response = await fetch('/shopapp/api/profile/balance/', {
+        const response = await fetch('/app/api/profile/balance/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -271,13 +271,13 @@ async function handleLogout(event) {
     event.preventDefault();
     
     try {
-        const response = await fetch('/shopapp/api/logout/', {
+        const response = await fetch('/app/api/logout/', {
             method: 'POST',
             credentials: 'include'
         });
 
         if (response.ok) {
-            window.location.href = '/shopapp/auth/';
+            window.location.href = '/app/auth/';
         } else {
             showNotification('Ошибка при выходе из системы', 'error');
         }

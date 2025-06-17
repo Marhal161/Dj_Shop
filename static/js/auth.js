@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 showMessage('loginMessage', data.message || 'Вход выполнен успешно!', false);
                 // Редирект после успешного входа
                 setTimeout(() => {
-                    window.location.href = '/shopapp/';
+                    window.location.href = '/app/';
                 }, 1500);
             } else {
                 // Обработка различных типов ошибок
@@ -149,7 +149,7 @@ function handleLogout(event) {
     
     console.log('Sending logout request');
     
-    fetch('/shopapp/api/logout/', {
+    fetch('/app/api/logout/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -172,15 +172,15 @@ function handleLogout(event) {
             sessionStorage.clear();
             
             // Перенаправляем на страницу авторизации
-            window.location.href = '/shopapp/auth/';
+            window.location.href = '/app/auth/';
         } else {
             console.error('Logout failed:', data.message);
-            window.location.href = '/shopapp/auth/';
+            window.location.href = '/app/auth/';
         }
     })
     .catch(error => {
         console.error('Error during logout:', error);
-        window.location.href = '/shopapp/auth/';
+        window.location.href = '/app/auth/';
     });
 }
 

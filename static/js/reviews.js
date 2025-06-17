@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Функция загрузки отзывов
     function loadReviews() {
-        fetch(`/shopapp/api/review/?product_id=${productId}`)
+            fetch(`/app/api/review/?product_id=${productId}`)
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 comment: this.comment.value
             };
             
-            fetch('/shopapp/api/review/', {
+            fetch('/app/api/review/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -27,7 +27,7 @@
         <header class="header">
             <div class="header-container">
                 <div class="logo">
-                    <a href="/shopapp/">
+                    <a href="/app/">
                         <img src="{% static 'images/logo.png' %}" alt="Логотип" style="width: 100px; height: auto;">
                     </a>
                 </div>
@@ -39,10 +39,10 @@
                 </nav>
     
                 <div class="user-controls">
-                    <a href="/shopapp/profile/" class="profile-btn">
+                    <a href="/app/profile/" class="profile-btn">
                         <img src="{% static 'images/profile.png' %}" alt="Профиль">
                     </a>
-                    <a href="/shopapp/cart/" class="cart-btn">
+                    <a href="/app/cart/" class="cart-btn">
                         <img src="{% static 'images/cart.png' %}" alt="Корзина">
                     </a>
                     {% if is_authenticated %}
@@ -50,7 +50,7 @@
                             <button type="button" class="logout-button" onclick="handleLogout(event)">Выйти</button>
                         </div>
                     {% else %}
-                        <a href="/shopapp/auth/" class="login-btn">Войти</a>
+                        <a href="/app/auth/" class="login-btn">Войти</a>
                     {% endif %}
                 </div>
             </div>
@@ -110,9 +110,9 @@
                 <div class="game-actions">
                     {% if request.user.is_authenticated %}
                         <button class="add-to-cart-button" data-game-id="{{ game.id }}">Добавить в корзину</button>
-                        <a href="/shopapp/cart/" class="view-cart-button">Перейти в корзину</a>
+                        <a href="/app/cart/" class="view-cart-button">Перейти в корзину</a>
                     {% else %}
-                        <a href="/shopapp/auth/" class="buy-button">Войдите, чтобы купить</a>
+                        <a href="/app/auth/" class="buy-button">Войдите, чтобы купить</a>
                     {% endif %}
                 </div>
 
